@@ -17,10 +17,17 @@ TARGET = cs251_base
 # Project Paths
 PROJECT_ROOT=./
 EXTERNAL_ROOT=$(PROJECT_ROOT)/external
+EXTERNAL_SRC=$(PROJECT_ROOT)/external/src
 SRCDIR = $(PROJECT_ROOT)/src
 OBJDIR = $(PROJECT_ROOT)/obj
 BINDIR = $(PROJECT_ROOT)/bin
 DOCDIR = $(PROJECT_ROOT)/doc
+MODDIR = $(PROJECT_ROOT)/modsrc
+DIR_ECOM = $(EXTERNAL_SRC)/Box2D/Box2D/Common
+DIR_EDYN = $(EXTERNAL_SRC)/Box2D/Box2D/Dynamics
+BB=$(PROJECT_ROOT)/external/src/Box2D
+BC=$(PROJECT_ROOT)/external/lib/
+BD=$(PROJECT_ROOT)/external/include/
 
 # Library Paths
 BOX2D_ROOT=$(EXTERNAL_ROOT)
@@ -59,7 +66,41 @@ OBJS := $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
 .PHONY: all setup doc clean distclean
 
-all: setup $(BINDIR)/$(TARGET)
+all:setup $(BINDIR)/$(TARGET)
+
+r: distclean b2dsetup setup $(BINDIR)/$(TARGET)
+
+b2dsetup: b2dsetupstr modf b2dsetupcont
+
+b2dsetupstr:
+	@if [ ! -d external/src/Box2D/build251 ]; \
+	then \
+	tar -xvzf $(EXTERNAL_SRC)/Box2D.tgz; \
+	mv Box2D $(EXTERNAL_SRC)/Box2D; \
+	cd $(EXTERNAL_SRC)/Box2D; \
+	mkdir build251; \
+	cd build251; \
+	fi
+
+modf:
+	@$(RM) -rf $(SRCDIR)/render.cpp $(SRCDIR)/cs251_base.cpp $(SRCDIR)/cs251_base.hpp 
+	@cp $(MODDIR)/render.cpp $(SRCDIR)/
+	@cp $(MODDIR)/cs251_base.cpp $(SRCDIR)/
+	@cp $(MODDIR)/cs251_base.hpp $(SRCDIR)/
+	@$(RM) $(DIR_ECOM)/b2Draw.h $(DIR_EDYN)/b2World.cpp $(DIR_EDYN)/b2Fixture.h $(DIR_EDYN)/b2Fixture.cpp #For Color
+	@$(RM) $(DIR_EDYN)/b2Body.cpp $(DIR_EDYN)/b2Body.h                                                    #For MouseJoint
+	@cp $(MODDIR)/b2Draw.h $(DIR_ECOM)/
+	@cp $(MODDIR)/b2World.cpp $(DIR_EDYN)/
+	@cp $(MODDIR)/b2Fixture.h $(DIR_EDYN)/
+	@cp $(MODDIR)/b2Fixture.cpp $(DIR_EDYN)/
+	@cp $(MODDIR)/b2Body.cpp $(DIR_EDYN)/
+	@cp $(MODDIR)/b2Body.h $(DIR_EDYN)/
+
+b2dsetupcont:	
+	@cd $(EXTERNAL_SRC)/Box2D/build251; \
+	cmake ../; \
+	make; \
+	make install; 	
 
 setup:
 	@$(ECHO) "Setting up compilation..."
@@ -97,9 +138,7 @@ doc:
 	@$(ECHO) "Done"
 
 clean:
-	@$(ECHO) -n "Cleaning up..."
-	@$(RM) -rf $(OBJDIR) *~ $(DEPS) $(SRCDIR)/*~
-	@$(ECHO) "Done"
+	@$(RM) -rf $(OBJDIR) *~ $(DEPS) $(SRCDIR)/*~ $(BINDIR) 
 
 distclean: clean
-	@$(RM) -rf $(BINDIR) $(DOCDIR)/html
+	@$(RM) -rf $(BB) $(BC) $(BD) $(PROJECT_ROOT)/doc
