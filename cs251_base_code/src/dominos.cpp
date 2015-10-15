@@ -45,130 +45,88 @@ namespace cs251
   
   dominos_t::dominos_t()
   {
-    float32 xg=x-r*20.0f;
-        float32 yg=y-r*32.0f;
-        float32 rg=r*0.8f;
+    {
+        float32 rc=r*1.45f;
+        float32 xc=r*-20.0f;
+        float32 yc=r*7.5f;
 
-        //Cog1
+        b2BodyDef cardf;
+        cardf.type = b2_dynamicBody;
+        cardf.position.Set(x+rc*xc, y+rc*yc);
+        b2Body* car = m_world->CreateBody(&cardf);
+        car->ApplyLinearImpulse(b2Vec2(10,0), car->GetPosition() ,true);
+        b2FixtureDef cfd;
+        cfd.density = 5.0f;
+        cfd.friction = 0.0f;
+        b2CircleShape circle;
+        b2PolygonShape shape1;
+        //windows
+        shape1.SetAsBox(rc*1.0f, rc*1.0f, rc*b2Vec2(-1.8f,0.5f), 0);
+        cfd.shape = &shape1;
+        (car->CreateFixture(&cfd))->SetFcolor(0.5294*255,0.8078*255,0.9804*255,1.0);
+        shape1.SetAsBox(rc*1.0f, rc*1.0f, rc*b2Vec2(1.8f,0.5f), 0);
+        cfd.shape = &shape1;
+        (car->CreateFixture(&cfd))->SetFcolor(0.5294*255,0.8078*255,0.9804*255,1.0);
+        //body
+        shape1.SetAsBox(rc*2.5f, rc*2.5f);
+        cfd.shape = &shape1;      
+        (car->CreateFixture(&cfd))->SetFcolor(255,0,0,1.0,0);
+        shape1.SetAsBox(rc*6.25f, rc*1.25f, rc*b2Vec2(0.0f,-1.25f), 0);
+        cfd.shape = &shape1;
+        (car->CreateFixture(&cfd))->SetFcolor(255,0,0,1.0,0);
+        shape1.SetAsBox(rc*7.5f, rc*1.0f, rc*b2Vec2(0.0f,-2.0f), 0);
+        cfd.shape = &shape1;
+        (car->CreateFixture(&cfd))->SetFcolor(255,0,0,1.0,0);
+        //body curves
+        circle.m_radius = rc*2.5f;
+        circle.m_p=b2Vec2(rc*-2.5,0);      
+        cfd.shape = &circle;
+        (car->CreateFixture(&cfd))->SetFcolor(255,0,0,1.0);
+        circle.m_p=b2Vec2(rc*2.5,0);      
+        cfd.shape = &circle;
+        (car->CreateFixture(&cfd))->SetFcolor(255,0,0,1.0);
+        circle.m_radius = rc*1.25f;
+        circle.m_p=b2Vec2(rc*-6.25,rc*-1.25);
+        cfd.shape = &circle;
+        (car->CreateFixture(&cfd))->SetFcolor(255,0,0,1.0);
+        circle.m_p=b2Vec2(rc*6.25,rc*-1.25);
+        cfd.shape = &circle;
+        (car->CreateFixture(&cfd))->SetFcolor(255,0,0,1.0);    
+        //wheels
         {
-          float32 c_rad = rg*4.0;
-          b2Body* sbody;
+          b2Body* w1;
+          b2Body* w2;
           b2CircleShape circle;
-          circle.m_radius = c_rad;
-      
+          circle.m_radius = r*1.25;
           b2FixtureDef ballfd;
           ballfd.shape = &circle;
           ballfd.density = 5.0f;
           ballfd.friction = 0.0f;
           ballfd.restitution = 0.0f;
           b2BodyDef ballbd;
-          ballbd.type = b2_dynamicBody;
-          ballbd.position.Set(xg+rg*4.7f*2.414f, yg+rg*(20.0f+4.7f*1.414f));
-          sbody = m_world->CreateBody(&ballbd);
-          (sbody->CreateFixture(&ballfd))->SetFcolor(255,0,0,0.85);
-
-          b2BodyDef bd2;
-          bd2.position.Set(xg+rg*4.7f*2.414f, yg+rg*(20.0f+4.7f*1.414f));
-          b2Body* body2 = m_world->CreateBody(&bd2);
-
-          b2RevoluteJointDef jointDef;
-          jointDef.bodyA = sbody;
-          jointDef.bodyB = body2;
+          ballbd.type = b2_dynamicBody;       
+          
+          ballbd.position.Set(x+rc*(xc-4.75f), y+rc*(yc-4.0f));
+          w1 = m_world->CreateBody(&ballbd); 
+          (w1->CreateFixture(&ballfd))->SetFcolor(255,255,0,0.85);
+          ballbd.position.Set(x+rc*(xc+4.75f), y+rc*(yc-4.0f)); 
+          w2 = m_world->CreateBody(&ballbd);
+          (w2->CreateFixture(&ballfd))->SetFcolor(255,255,0,0.85);
+          //joints
+          b2DistanceJointDef jointDef;
+          jointDef.bodyA = w1;
+          jointDef.bodyB = car;
           jointDef.localAnchorA.Set(0,0);
-          jointDef.localAnchorB.Set(0,0);
-          jointDef.collideConnected = false;
+          jointDef.localAnchorB.Set(rc*-4.75f,rc*-3.0f);
+          jointDef.length = rc*0.8f;
+          jointDef.collideConnected = true;
+          jointDef.frequencyHz = 0.0f;
           m_world->CreateJoint(&jointDef);
 
-          int32 n_b = 10;
-          float32 ang_inc = 2.0f * b2_pi / n_b;
-          float32 ang=ang_inc/2;
-
-          for(int32 i=0;i<n_b;i++,ang+=ang_inc)
-          {
-            if(i==2)continue;
-            b2PolygonShape shape1;
-            shape1.SetAsBox(rg*0.6f, rg*0.8f, 1.1*b2Vec2(c_rad*sinf(ang), -c_rad*cosf(ang)), ang);
-            b2FixtureDef fd3;
-            fd3.density = 0.0f;
-            fd3.shape = &shape1;
-            (sbody->CreateFixture(&fd3))->SetFcolor(255,255,0,0.9);
-          }
-          ang=5*ang_inc/2;
-          b2PolygonShape shape1;
-          b2FixtureDef fd3;
-          fd3.density = 0.0f;
-          shape1.SetAsBox(rg*0.4f, rg*6.6f, 2.6*b2Vec2(c_rad*sinf(ang), -c_rad*cosf(ang)), ang);
-          fd3.shape = &shape1;
-          (sbody->CreateFixture(&fd3))->SetFcolor(255,255,0,0.9);
-          shape1.SetAsBox(rg*1.8f, rg*0.35f, 1.5*b2Vec2(c_rad*sinf(ang+ang_inc*0.4f), -c_rad*cosf(ang+ang_inc*0.4f)), ang);
-          fd3.shape = &shape1;
-          (sbody->CreateFixture(&fd3))->SetFcolor(255,255,0,0.9);
-          shape1.SetAsBox(rg*1.8f, rg*0.35f, 4.2*b2Vec2(c_rad*sinf(ang+ang_inc*0.22f), -c_rad*cosf(ang+ang_inc*0.15f)), ang);
-          fd3.shape = &shape1;
-          (sbody->CreateFixture(&fd3))->SetFcolor(255,255,0,0.9);
-        }
-        //Cog2
-        {
-          float32 c_rad = rg*4.0;
-          b2Body* sbody;
-          b2CircleShape circle;
-          circle.m_radius = c_rad;
-      
-          b2FixtureDef ballfd;
-          ballfd.shape = &circle;
-          ballfd.density = 5.0f;
-          ballfd.friction = 0.0f;
-          ballfd.restitution = 0.0f;
-          b2BodyDef ballbd;
-          ballbd.type = b2_dynamicBody;
-          ballbd.position.Set(xg+rg*-4.7f, yg+rg*20.0f);
-          sbody = m_world->CreateBody(&ballbd);
-          (sbody->CreateFixture(&ballfd))->SetFcolor(255,0,0,0.85);
-
-          b2BodyDef bd2;
-          bd2.position.Set(xg+rg*-4.7f, yg+rg*20.0f);
-          b2Body* body2 = m_world->CreateBody(&bd2);
-
-          b2RevoluteJointDef jointDef;
-          jointDef.bodyA = sbody;
-          jointDef.bodyB = body2;
-          jointDef.localAnchorA.Set(0,0);
-          jointDef.localAnchorB.Set(0,0);
-          jointDef.collideConnected = false;
+          jointDef.bodyA = w2;
+          jointDef.localAnchorB.Set(rc*4.75f,rc*-3.0f);
           m_world->CreateJoint(&jointDef);
-
-          int32 n_b = 10;
-          float32 ang_inc = 2.0f * b2_pi / n_b;
-          float32 ang=0;
-
-          for(int32 i=0;i<n_b;i++,ang+=ang_inc)
-          {
-            b2PolygonShape shape1;
-            shape1.SetAsBox(rg*0.6f, rg*0.8f, 1.1*b2Vec2(c_rad*sinf(ang), -c_rad*cosf(ang)), ang);
-            b2FixtureDef fd3;
-            fd3.density = 0.0f;
-            fd3.shape = &shape1;
-            (sbody->CreateFixture(&fd3))->SetFcolor(255,255,0,0.9);
-          }
-
-          {
-            b2PolygonShape shape1;
-            shape1.SetAsBox(rg*0.3f, rg*7.5f, rg*b2Vec2(-3.0f, -13.0f), b2_pi/3);
-            b2FixtureDef fdb;
-            fdb.density = 65.0f;
-            fdb.restitution = 0.4f;
-            fdb.shape = &shape1;
-            (sbody->CreateFixture(&fdb))->SetFcolor(0,0,255,0.9);
-
-            b2EdgeShape eshape; 
-            eshape.Set(b2Vec2(0,0),b2Vec2(rg*-7.5f,rg*-10.5f));
-            b2FixtureDef myfd;
-            myfd.shape = &eshape;
-            myfd.density = 0.0f;
-            myfd.filter.maskBits = 0x0000;
-            (sbody->CreateFixture(&myfd))->SetFcolor(255,0,0,0.9f);
-          }
-
         }
+    }
   }
 }
