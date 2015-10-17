@@ -75,21 +75,21 @@ namespace cs251
       rbody= m_world->CreateBody(&bd);
       rbody->CreateFixture(&shape, 0.0f);
       }
-      /*b2Body* sbody1;
+      b2Body* sbody1;
       {
       b2CircleShape circle;
       circle.m_radius = 1.0;
       b2FixtureDef ballfd;
       ballfd.shape = &circle;
       ballfd.density = 50.0f;
-      ballfd.friction = 0.0f;
-      ballfd.restitution = 1.50f;
+      ballfd.friction = 0.5f;
+      ballfd.restitution = 0.0f;
       b2BodyDef ballbd;
       ballbd.type = b2_dynamicBody;
-      ballbd.position.Set(14.0f, 18.0f);
+      ballbd.position.Set(-4.1f, 48.0f);
       sbody1 = m_world->CreateBody(&ballbd);
       sbody1->CreateFixture(&ballfd);
-      }*/
+      }
       {
       b2Body *sbody2, *sbody3;
       {
@@ -97,8 +97,8 @@ namespace cs251
       circle.m_radius = 5.0;
       b2FixtureDef ballfd;
       ballfd.shape = &circle;
-      ballfd.density = 50.0f;
-      ballfd.friction = 1.0f;
+      ballfd.density = 1.0f;
+      ballfd.friction = 0.1f;
       ballfd.restitution = 0.0f;
       b2BodyDef ballbd;
       ballbd.position.Set(-20.0f, 15.0f);
@@ -110,16 +110,56 @@ namespace cs251
       sbody3 = m_world->CreateBody(&ballbd);
       sbody3->CreateFixture(&ballfd);
       }
-      b2Body* rbody;
+
+      b2Body *sbody4, *sbody5;
+      {
+      b2CircleShape circle;
+      circle.m_radius = 0.5;
+      b2FixtureDef ballfd;
+      ballfd.shape = &circle;
+      ballfd.density = 50.0f;
+      ballfd.friction = 0.0f;
+      ballfd.restitution = 0.0f;
+      b2BodyDef ballbd;
+      ballbd.position.Set(-20.0f, 15.0f);
+      //ballbd.type=b2_dynamicBody;
+      ballbd.fixedRotation=true;
+      sbody4 = m_world->CreateBody(&ballbd);
+      sbody4->CreateFixture(&ballfd);
+      ballbd.position.Set(-10.0f, 15.0f);
+      sbody5 = m_world->CreateBody(&ballbd);
+      sbody5->CreateFixture(&ballfd);
+      }
+      /*b2Body* rbody;
       {
       b2PolygonShape shape;
-      shape.SetAsBox(2.5f, 0.25f, b2Vec2(0,0), 120 );
+      shape.SetAsBox(5.0f, 0.25f);
       b2BodyDef bd;
-      //bd.type=b2_dynamicBody;
-      bd.position.Set(-20.0f,15.0f);
+      bd.type=b2_dynamicBody;
+      bd.position.Set(0.0f,15.0f);
       rbody= m_world->CreateBody(&bd);
       rbody->CreateFixture(&shape, 0.0f);
-      }
+      }*/
+      b2DistanceJointDef *distance_joint;
+      distance_joint = new b2DistanceJointDef();
+      distance_joint->bodyA = sbody2;
+      distance_joint->bodyB = sbody4;
+      distance_joint->length=0.0f;
+      distance_joint->frequencyHz = 0.0f;
+      distance_joint->dampingRatio = 0.0f;
+      m_world->CreateJoint(distance_joint);
+      distance_joint->bodyA = sbody3;
+      distance_joint->bodyB = sbody5;
+      distance_joint->length=0.0f;
+      distance_joint->frequencyHz = 0.0f;
+      distance_joint->dampingRatio = 1.0f;
+      m_world->CreateJoint(distance_joint);
+      distance_joint->bodyA = sbody3;
+      distance_joint->bodyB = rbody;
+      distance_joint->length=10.0f;
+      distance_joint->frequencyHz = 0.0f;
+      distance_joint->dampingRatio = 0.0f;
+      m_world->CreateJoint(distance_joint);
       }
   }
 
