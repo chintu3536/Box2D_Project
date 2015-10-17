@@ -41,6 +41,8 @@ base_sim_t::base_sim_t()
 
 	memset(&m_max_profile, 0, sizeof(b2Profile));
 	memset(&m_total_profile, 0, sizeof(b2Profile));
+
+  m_mouseJoint = NULL;
 }
 
 base_sim_t::~base_sim_t()
@@ -244,4 +246,103 @@ void base_sim_t::step(settings_t* settings)
 	    }
 	}
     }
+}
+
+//////////////////////////////////////////////////////////////////////MouseJoint
+
+class QueryCallback : public b2QueryCallback
+{
+public:
+  QueryCallback(const b2Vec2& point)
+  {
+    m_point = point;
+    m_fixture = NULL;
+  }
+
+  bool ReportFixture(b2Fixture* fixture)
+  {
+    b2Body* body = fixture->GetBody();
+    if (body->GetType() == b2_dynamicBody && body->getmj())
+    {
+      bool inside = fixture->TestPoint(m_point);
+      if (inside)
+      {
+        m_fixture = fixture;
+        return false;
+      }
+    }
+    return true;
+  }
+
+  b2Vec2 m_point;
+  b2Fixture* m_fixture;
+};
+
+void base_sim_t::mouse_down(const b2Vec2& p)
+{
+  m_mouseWorld = p;
+  if (m_mouseJoint != NULL)
+  {
+    return;
+  }
+  b2AABB aabb;
+  b2Vec2 d;
+  d.Set(0.001f, 0.001f);
+  aabb.lowerBound = p - d;
+  aabb.upperBound = p + d;
+
+  QueryCallback callback(p);
+  m_world->QueryAABB(&callback, aabb);
+
+  if (callback.m_fixture)
+  {
+    b2Body* body = callback.m_fixture->GetBody();
+    b2MouseJointDef md;
+    md.bodyA = m_ground_body;
+    md.bodyB = body;
+    md.target = p;
+    md.maxForce = 1000.0f * body->GetMass();
+    m_mouseJoint = (b2MouseJoint*)m_world->CreateJoint(&md);
+    body->SetAwake(true);
+  }
+}
+
+void base_sim_t::mouse_up(const b2Vec2& p)
+{
+  if (m_mouseJoint)
+  {
+    m_world->DestroyJoint(m_mouseJoint);
+    m_mouseJoint = NULL;
+  }
+}
+
+void base_sim_t::mouse_move(const b2Vec2& p)
+{
+  m_mouseWorld = p;
+  if (m_mouseJoint)
+  {
+    m_mouseJoint->SetTarget(p);
+  }
+}
+
+//////////////////////////////////////////////////////Switch Body b/w sims.
+
+void base_sim_t::switchBody(b2Body* o, b2Body* n)
+{
+  if(o->IsActive())
+  {
+    n->SetActive(1);
+    n->SetTransform(o->GetPosition(), o->GetAngle());
+    n->SetLinearVelocity(o->GetLinearVelocity());
+    n->SetAngularVelocity(o->GetAngularVelocity());
+    o->SetActive(0);
+  }
+  else
+  {
+    o->SetActive(1);
+    o->SetTransform(n->GetPosition(), n->GetAngle());
+    o->SetLinearVelocity(n->GetLinearVelocity());
+    o->SetAngularVelocity(n->GetAngularVelocity());
+    n->SetActive(0);
+  }
 }

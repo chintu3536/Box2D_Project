@@ -16,7 +16,7 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-/* 
+/*  
  * Base code for CS 251 Software Systems Lab 
  * Department of Computer Science and Engineering, IIT Bombay
  * 
@@ -49,8 +49,8 @@ namespace cs251
   extern int32 test_index;
   extern int32 test_selection;
   extern int32 test_count;
-  extern cs251::sim_t* entry;
-  extern cs251::base_sim_t* test;
+  extern cs251::sim_t* entry[10];
+  extern cs251::base_sim_t* test[10];
   extern cs251::settings_t settings;
   extern const int32 frame_period;
   extern float settings_hz;
@@ -113,14 +113,13 @@ void create_glui_ui(void)
 
 //! This is the main function
 int main(int argc, char** argv)
-{
-  test_count = 1;
+{ 
+  test_count = 3;
   test_index = 0;
   test_selection = test_index;
   
-  entry = sim;
-  test = entry->create_fcn();
-
+  for(int i=0;i<test_count;i++) { entry[i] = sim[i]; test[i] = entry[i]->create_fcn(); }
+ 
   //! This initializes GLUT
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
@@ -144,9 +143,12 @@ int main(int argc, char** argv)
 
   //! We create the GLUI user interface
   create_glui_ui();
-
+  //skyblue=glClearColor(0.5294,0.8078,0.9804,1.0);
+  glClearColor(0.5294,0.8078,0.9804,1.0);
+  //glClearColor(1.0,0,0,1);
   //! Enter the infinite GLUT event loop
   glutMainLoop();
   
   return 0;
 }
+//0.486,0.988,0

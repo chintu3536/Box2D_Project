@@ -17,17 +17,18 @@
 //! The namespace protects the global variables and other names from
 //! clashes in scope. Read about the use of named and unnamed
 //! namespaces in C++ Figure out where all the datatypes used below
-//! are defined
+//! are defined  
 namespace cs251
-{
+{ 
+  int32 step_count=0; 
   int32 test_index = 0;
   int32 test_selection = 0;
   int32 test_count = 0;
-  cs251::sim_t* entry;
-  cs251::base_sim_t* test;
+  cs251::sim_t* entry[10]={NULL};
+  cs251::base_sim_t* test[10]={NULL};
   cs251::settings_t settings;
-  int32 width = 640;
-  int32 height = 480;
+  int32 width = 1360;
+  int32 height = 768;
   int32 frame_period = 16;
   int32 main_window;
   float settings_hz = 60.0;
@@ -93,6 +94,10 @@ namespace cs251
     case 27:
       exit(0);
       break;
+
+    case 's':
+      test[1]->switchBody(o_hvsp,n_hvsp);
+      break;
       
       //! Press 'z' to zoom out.
     case 'z':
@@ -108,8 +113,14 @@ namespace cs251
       
     //! Press 'r' to reset.
     case 'r':
-      delete test;
-      test = entry->create_fcn();
+      for(int z=0;z<test_count;z++)
+      {
+        if(test[z]!=NULL)
+        {
+          delete test[z];
+          test[z] = entry[z]->create_fcn();
+        }
+      }
       break;
       
       //! Press 'p' to pause.
@@ -119,10 +130,13 @@ namespace cs251
       
       //! The default case. Why is this needed?
     default:
-      if (test)
-	{
-	  test->keyboard(key);
-	}
+      for(int z=0;z<test_count;z++)
+      {
+        if (test[z])
+          {
+            test[z]->keyboard(key);
+          }
+      }          
     }
   }
   
@@ -174,9 +188,12 @@ namespace cs251
     B2_NOT_USED(x);
     B2_NOT_USED(y);
     
-    if (test)
+    for(int z=0;z<test_count;z++)
       {
-	test->keyboard_up(key);
+        if (test[z])
+          {
+            test[z]->keyboard_up(key);
+          }
       }
   }
   
@@ -185,54 +202,78 @@ namespace cs251
     //! Use the mouse to move things around - figure out how this works?
     if (button == GLUT_LEFT_BUTTON)
       {
-	int mod = glutGetModifiers();
-	b2Vec2 p = convert_screen_to_world(x, y);
-	if (state == GLUT_DOWN)
-	  {
-	    b2Vec2 p = convert_screen_to_world(x, y);
-	    if (mod == GLUT_ACTIVE_SHIFT)
-	      {
-		test->shift_mouse_down(p);
-	      }
-	    else
-	      {
-		test->mouse_down(p);
-	      }
-	  }
-	
-	if (state == GLUT_UP)
-	  {
-	    test->mouse_up(p);
-	  }
+        	int mod = glutGetModifiers();
+        	b2Vec2 p = convert_screen_to_world(x, y);
+        	if (state == GLUT_DOWN)
+      	  {
+      	    b2Vec2 p = convert_screen_to_world(x, y);
+      	    if (mod == GLUT_ACTIVE_SHIFT)
+    	      {
+              for(int z=0;z<test_count;z++)
+              {
+                if (test[z])
+                  {
+                    test[z]->shift_mouse_down(p);
+                  }
+              }
+      		  }
+      	    else
+    	      {
+    		      for(int z=0;z<test_count;z++)
+              {
+                if (test[z])
+                  {
+                    test[z]->mouse_down(p);
+                  }
+              }
+      	     }
+      	  }
+        	
+        	if (state == GLUT_UP)
+      	  {
+      	     for(int z=0;z<test_count;z++)
+            {
+              if (test[z])
+              {
+                test[z]->mouse_up(p);
+              }
+            }
+      	  }
       }
     else if (button == GLUT_RIGHT_BUTTON)
       {
-	if (state == GLUT_DOWN)
-	  {	
-	    lastp = convert_screen_to_world(x, y);
-	    r_mouse_down = true;
-	  }
-	
-	if (state == GLUT_UP)
-	  {
-	  r_mouse_down = false;
-	  }
-      }
+      	if (state == GLUT_DOWN)
+      	  {	
+          	    lastp = convert_screen_to_world(x, y);
+          	    r_mouse_down = true;
+      	  }
+      	
+      	if (state == GLUT_UP)
+      	  {
+      	     r_mouse_down = false;
+      	  }
+            }
   }
   
   
   void callbacks_t::mouse_motion_cb(int32 x, int32 y)
   {
     b2Vec2 p = convert_screen_to_world(x, y);
-    test->mouse_move(p);
+    for(int z=0;z<test_count;z++)
+    {
+      if (test[z])
+        {
+          test[z]->mouse_move(p);
+        }
+    }
     
     if (r_mouse_down)
       {
-	b2Vec2 diff = p - lastp;
-	settings.view_center.x -= diff.x;
-	settings.view_center.y -= diff.y;
-	resize_cb(width, height);
-	lastp = convert_screen_to_world(x, y);
+      	b2Vec2 diff = p - lastp;
+      	settings.view_center.x -= diff.x;
+      	settings.view_center.y -= diff.y;
+      	resize_cb(width, height);
+      	lastp = convert_screen_to_world(x, y);
       }
   }
   
@@ -241,50 +282,6 @@ namespace cs251
     glutSetWindow(main_window);
     glutPostRedisplay();
     glutTimerFunc(frame_period, timer_cb, 0);
-  }
-  
-  void callbacks_t::display_cb(void)
-  {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    
-    test->set_text_line(30);
-    b2Vec2 old_center = settings.view_center;
-    settings.hz = settings_hz;
-    
-    test->step(&settings);
-    
-    if (old_center.x != settings.view_center.x || old_center.y != settings.view_center.y)
-      {
-	resize_cb(width, height);
-      }
-    
-    test->draw_title(5, 15, entry->name);
-    
-    glutSwapBuffers();
-    
-    if (test_selection != test_index)
-      {
-	test_index = test_selection;
-	delete test;
-	entry = cs251::sim;
-	test = entry->create_fcn();
-	view_zoom = 1.0f;
-	settings.view_center.Set(0.0f, 20.0f);
-      resize_cb(width, height);
-      }
-  }
-  
-  
-  
-  void callbacks_t::restart_cb(int)
-  {
-    delete test;
-    entry = cs251::sim;
-    test = entry->create_fcn();
-    resize_cb(width, height);
   }
   
   void callbacks_t::pause_cb(int)
@@ -301,6 +298,23 @@ namespace cs251
   {
     settings.pause = 1;
     settings.single_step = 1;
+  }
+
+  ///////////////////////////////////////////////////////Resize Func Mod
+
+  void callbacks_t::restart_cb(int)
+  {
+    //step_count=0;
+    //settings.view_center.Set(0.0f, 20.0f);
+    for(int z=0;z<test_count;z++)
+    {
+      if(test[z]){
+        delete test[z];
+        entry[z] = cs251::sim[z];
+        test[z] = entry[z]->create_fcn();
+      }
+    }
+    resize_cb(width, height);
   }
 
 };

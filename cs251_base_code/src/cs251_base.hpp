@@ -101,7 +101,7 @@ namespace cs251
       name(_name), create_fcn(_create_fcn) {;}
   };
   
-  extern sim_t *sim;
+  extern sim_t *sim[10];
   
   
   const int32 k_max_contact_points = 2048;  
@@ -132,9 +132,9 @@ namespace cs251
     virtual void keyboard_up(unsigned char key) { B2_NOT_USED(key); }
 
     void shift_mouse_down(const b2Vec2& p) { B2_NOT_USED(p); }
-    virtual void mouse_down(const b2Vec2& p) { B2_NOT_USED(p); }
-    virtual void mouse_up(const b2Vec2& p) { B2_NOT_USED(p); }
-    void mouse_move(const b2Vec2& p) { B2_NOT_USED(p); }
+    virtual void mouse_down(const b2Vec2& p) ;
+    virtual void mouse_up(const b2Vec2& p) ;
+    void mouse_move(const b2Vec2& p) ;
 
     
     // Let derived tests know that a joint was destroyed.
@@ -149,6 +149,9 @@ namespace cs251
       B2_NOT_USED(contact);
       B2_NOT_USED(impulse);
     }
+
+    //For Common Bodies
+    void switchBody(b2Body* o, b2Body* n);
 
   //!How are protected members different from private memebers of a class in C++ ?
   protected:
@@ -169,7 +172,15 @@ namespace cs251
     
     b2Profile m_max_profile;
     b2Profile m_total_profile;
+
+    b2Vec2 m_mouseWorld;
+    b2MouseJoint* m_mouseJoint;
   };
+ 
+  //Common Body Defs
+  extern b2Body* o_hvsp;
+  extern b2Body* n_hvsp;
+
 }
 
 #endif

@@ -29,17 +29,126 @@ namespace cs251
 {
   //! This is the class that sets up the Box2D simulation world
   //! Notice the public inheritance - why do we inherit the base_sim_t class?
-  class dominos_t : public base_sim_t
+  class dominos_t1 : public base_sim_t
   {
   public:
     
-    dominos_t();
+    dominos_t1();
     
     static base_sim_t* create()
     {
-      return new dominos_t;
+      return new dominos_t1;
     }
   };
+
+  class dominos_t2 : public base_sim_t
+  {
+  public:
+    
+    dominos_t2();
+    
+    static base_sim_t* create()
+    {
+      return new dominos_t2;
+    }
+  };
+
+  class dominos_t3 : public base_sim_t
+  {
+  public:
+    
+    dominos_t3();
+    
+    static base_sim_t* create()
+    {
+      return new dominos_t3;
+    }
+  };
+
+  class dominos_t4 : public base_sim_t
+  {
+  public:
+    
+    dominos_t4();
+    
+    static base_sim_t* create()
+    {
+      return new dominos_t4;
+    }
+  };
+
+  class dominos_t5 : public base_sim_t
+  {
+  public:
+    
+    dominos_t5();
+    
+    static base_sim_t* create()
+    {
+      return new dominos_t5;
+    }
+  };
+
+  class dominos_t6 : public base_sim_t
+  {
+  public:
+    
+    dominos_t6();
+    
+    static base_sim_t* create()
+    {
+      return new dominos_t6;
+    }
+  };
+
+  class dominos_t7 : public base_sim_t
+  {
+  public:
+    
+    dominos_t7();
+    
+    static base_sim_t* create()
+    {
+      return new dominos_t7;
+    }
+  };
+
+  class dominos_t8 : public base_sim_t
+  {
+  public:
+    
+    dominos_t8();
+    
+    static base_sim_t* create()
+    {
+      return new dominos_t8;
+    }
+  };
+
+  class dominos_t9 : public base_sim_t
+  {
+  public:
+    
+    dominos_t9();
+    
+    static base_sim_t* create()
+    {
+      return new dominos_t9;
+    }
+  };
+
+  class dominos_t10 : public base_sim_t
+  {
+  public:
+    
+    dominos_t10();
+    
+    static base_sim_t* create()
+    {
+      return new dominos_t10;
+    }
+  };
+
 }
   
 #endif
