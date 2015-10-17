@@ -86,7 +86,7 @@ namespace cs251
       ballfd.restitution = 0.0f;
       b2BodyDef ballbd;
       ballbd.type = b2_dynamicBody;
-      ballbd.position.Set(14.0f, 48.0f);
+      ballbd.position.Set(-4.1f, 48.0f);
       sbody1 = m_world->CreateBody(&ballbd);
       sbody1->CreateFixture(&ballfd);
       }
@@ -98,7 +98,7 @@ namespace cs251
       b2FixtureDef ballfd;
       ballfd.shape = &circle;
       ballfd.density = 1.0f;
-      ballfd.friction = 0.1f;
+      ballfd.friction = 0.01f;
       ballfd.restitution = 0.0f;
       b2BodyDef ballbd;
       ballbd.position.Set(-20.0f, 15.0f);
@@ -140,26 +140,25 @@ namespace cs251
       rbody= m_world->CreateBody(&bd);
       rbody->CreateFixture(&shape, 0.0f);
       }*/
-      b2DistanceJointDef *distance_joint;
-      distance_joint = new b2DistanceJointDef();
-      distance_joint->bodyA = sbody2;
-      distance_joint->bodyB = sbody4;
-      distance_joint->length=0.0f;
-      distance_joint->frequencyHz = 0.0f;
-      distance_joint->dampingRatio = 0.0f;
-      m_world->CreateJoint(distance_joint);
-      distance_joint->bodyA = sbody3;
-      distance_joint->bodyB = sbody5;
-      distance_joint->length=0.0f;
-      distance_joint->frequencyHz = 0.0f;
-      distance_joint->dampingRatio = 1.0f;
-      m_world->CreateJoint(distance_joint);
-      distance_joint->bodyA = sbody3;
+      b2RevoluteJointDef jointDef;
+      jointDef.bodyA = sbody2;
+      jointDef.bodyB = sbody4;
+      jointDef.localAnchorA.Set(0,0);
+      jointDef.localAnchorB.Set(0,0);
+      jointDef.collideConnected = false;
+      m_world->CreateJoint(&jointDef);
+      jointDef.bodyA = sbody3;
+      jointDef.bodyB = sbody5;
+      jointDef.localAnchorA.Set(0,0);
+      jointDef.localAnchorB.Set(0,0);
+      jointDef.collideConnected = false;
+      m_world->CreateJoint(&jointDef);
+      /*distance_joint->bodyA = sbody3;
       distance_joint->bodyB = rbody;
       distance_joint->length=10.0f;
       distance_joint->frequencyHz = 0.0f;
       distance_joint->dampingRatio = 0.0f;
-      m_world->CreateJoint(distance_joint);
+      m_world->CreateJoint(distance_joint);*/
       }
       {
       b2PolygonShape shape;
