@@ -86,7 +86,7 @@ namespace cs251
       ballfd.restitution = 0.0f;
       b2BodyDef ballbd;
       ballbd.type = b2_dynamicBody;
-      ballbd.position.Set(-4.1f, 48.0f);
+      ballbd.position.Set(14.0f, 48.0f);
       sbody1 = m_world->CreateBody(&ballbd);
       sbody1->CreateFixture(&ballfd);
       }
@@ -161,6 +161,34 @@ namespace cs251
       distance_joint->dampingRatio = 0.0f;
       m_world->CreateJoint(distance_joint);
       }
+      {
+      b2PolygonShape shape;
+      shape.SetAsBox(2.2f, 0.2f);
+
+      b2BodyDef bd;
+      bd.position.Set(14.0f, 14.0f);
+      bd.type = b2_dynamicBody;
+      b2Body* body = m_world->CreateBody(&bd);
+      b2FixtureDef *fd = new b2FixtureDef;
+      fd->density = 1.f;
+      fd->shape = new b2PolygonShape;
+      fd->shape = &shape;
+      body->CreateFixture(fd);
+
+      b2PolygonShape shape2;
+      shape2.SetAsBox(0.2f, 2.0f);
+      b2BodyDef bd2;
+      bd2.position.Set(14.0f, 16.0f);
+      b2Body* body2 = m_world->CreateBody(&bd2);
+
+      b2RevoluteJointDef jointDef;
+      jointDef.bodyA = body;
+      jointDef.bodyB = body2;
+      jointDef.localAnchorA.Set(0,0);
+      jointDef.localAnchorB.Set(0,0);
+      jointDef.collideConnected = false;
+      m_world->CreateJoint(&jointDef);
+    }
   }
 
   sim_t *sim = new sim_t("Dominos", dominos_t::create);
