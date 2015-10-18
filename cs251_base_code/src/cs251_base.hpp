@@ -31,6 +31,8 @@
 #include <cstdlib>
 
 #define	RAND_LIMIT 32767
+#define DEGTORAD 0.0174532925f
+#define RADTODEG 57.295779513f
 
 namespace cs251
 {
@@ -178,8 +180,8 @@ namespace cs251
   };
  
   //Common Body Defs
-  extern b2Body* o_hvsp;
-  extern b2Body* n_hvsp;
+  //extern b2Body* o_hvsp;
+  //extern b2Body* n_hvsp;
 
 }
 

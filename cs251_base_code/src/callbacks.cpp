@@ -32,7 +32,7 @@ namespace cs251
   int32 frame_period = 16;
   int32 main_window;
   float settings_hz = 60.0;
-  float32 view_zoom = 1.0f;
+  float view_zoom = 1.5f;
   int tx, ty, tw, th;
   bool r_mouse_down;
   b2Vec2 lastp;
@@ -95,10 +95,6 @@ namespace cs251
       exit(0);
       break;
 
-    case 's':
-      test[1]->switchBody(o_hvsp,n_hvsp);
-      break;
-      
       //! Press 'z' to zoom out.
     case 'z':
       view_zoom = b2Min(1.1f * view_zoom, 20.0f);

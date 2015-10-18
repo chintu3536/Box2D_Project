@@ -88,7 +88,7 @@ void debug_draw_t::DrawCircle(const b2Vec2& center, float32 radius, const b2Colo
 
 void debug_draw_t::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color)
 {
-	const float32 k_segments = 16.0f;
+	const float32 k_segments = 20.0f;
 	const float32 k_increment = 2.0f * b2_pi / k_segments;
 	float32 theta = 0.0f;
 	glEnable(GL_BLEND);

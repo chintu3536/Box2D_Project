@@ -114,11 +114,12 @@ void create_glui_ui(void)
 //! This is the main function
 int main(int argc, char** argv)
 { 
-  test_count = 3;
+  test_count = 0;
   test_index = 0;
   test_selection = test_index;
   
-  for(int i=0;i<test_count;i++) { entry[i] = sim[i]; test[i] = entry[i]->create_fcn(); }
+  for(int i=0;i<10;i++) { if(sim[i]){entry[i] = sim[i];test_count++; } }
+  for(int i=0;i<test_count;i++) { test[i] = entry[i]->create_fcn(); }
  
   //! This initializes GLUT
   glutInit(&argc, argv);
