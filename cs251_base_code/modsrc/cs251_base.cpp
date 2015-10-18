@@ -324,3 +324,25 @@ void base_sim_t::mouse_move(const b2Vec2& p)
     m_mouseJoint->SetTarget(p);
   }
 }
+
+//////////////////////////////////////////////////////Switch Body b/w sims.
+
+void base_sim_t::switchBody(b2Body* o, b2Body* n)
+{
+  if(o->IsActive())
+  {
+    n->SetActive(1);
+    n->SetTransform(o->GetPosition(), o->GetAngle());
+    n->SetLinearVelocity(o->GetLinearVelocity());
+    n->SetAngularVelocity(o->GetAngularVelocity());
+    o->SetActive(0);
+  }
+  else
+  {
+    o->SetActive(1);
+    o->SetTransform(n->GetPosition(), n->GetAngle());
+    o->SetLinearVelocity(n->GetLinearVelocity());
+    o->SetAngularVelocity(n->GetAngularVelocity());
+    n->SetActive(0);
+  }
+}

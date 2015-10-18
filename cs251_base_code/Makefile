@@ -84,9 +84,16 @@ b2dsetupstr:
 
 modf:
 	@$(RM) -rf $(SRCDIR)/render.cpp $(SRCDIR)/cs251_base.cpp $(SRCDIR)/cs251_base.hpp 
+	@$(RM) -rf $(SRCDIR)/dominos.cpp $(SRCDIR)/dominos.hpp $(SRCDIR)/main.cpp $(SRCDIR)/callbacks.cpp
 	@cp $(MODDIR)/render.cpp $(SRCDIR)/
 	@cp $(MODDIR)/cs251_base.cpp $(SRCDIR)/
 	@cp $(MODDIR)/cs251_base.hpp $(SRCDIR)/
+	@cp $(MODDIR)/dominos.hpp $(SRCDIR)/
+	@cp $(MODDIR)/dominos_1.cpp $(SRCDIR)/
+	@cp $(MODDIR)/dominos_2.cpp $(SRCDIR)/
+	@cp $(MODDIR)/main.cpp $(SRCDIR)/
+	@cp $(MODDIR)/callbacks.cpp $(SRCDIR)/
+	@cp $(MODDIR)/init_sims.cpp $(SRCDIR)/
 	@$(RM) $(DIR_ECOM)/b2Draw.h $(DIR_EDYN)/b2World.cpp $(DIR_EDYN)/b2Fixture.h $(DIR_EDYN)/b2Fixture.cpp #For Color
 	@$(RM) $(DIR_EDYN)/b2Body.cpp $(DIR_EDYN)/b2Body.h                                                    #For MouseJoint
 	@cp $(MODDIR)/b2Draw.h $(DIR_ECOM)/

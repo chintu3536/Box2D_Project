@@ -101,7 +101,7 @@ namespace cs251
       name(_name), create_fcn(_create_fcn) {;}
   };
   
-  extern sim_t *sim;
+  extern sim_t *sim[10];
   
   
   const int32 k_max_contact_points = 2048;  
@@ -150,6 +150,9 @@ namespace cs251
       B2_NOT_USED(impulse);
     }
 
+    //For Common Bodies
+    void switchBody(b2Body* o, b2Body* n);
+
   //!How are protected members different from private memebers of a class in C++ ?
   protected:
 
@@ -173,6 +176,11 @@ namespace cs251
     b2Vec2 m_mouseWorld;
     b2MouseJoint* m_mouseJoint;
   };
+ 
+  //Common Body Defs
+  extern b2Body* o_hvsp;
+  extern b2Body* n_hvsp;
+
 }
 
 #endif

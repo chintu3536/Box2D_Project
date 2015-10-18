@@ -104,7 +104,7 @@ void debug_draw_t::DrawSolidCircle(const b2Vec2& center, float32 radius, const b
 	glEnd();
 	glDisable(GL_BLEND);
 
-	theta = 0.0f;
+	/*theta = 0.0f;
 	glColor4f(color.r, color.g, color.b, color.al);
 	glBegin(GL_LINE_LOOP);
 	//glLineWidth(8);
@@ -114,7 +114,7 @@ void debug_draw_t::DrawSolidCircle(const b2Vec2& center, float32 radius, const b
 		glVertex2f(v.x, v.y);
 		theta += k_increment;
 	}
-	glEnd();
+	glEnd();*/
 
 	//line
 	/*b2Vec2 p = center + radius * axis;

@@ -1,4 +1,4 @@
-             /*
+/*
 * Copyright (c) 2006-2007 Erin Catto http://www.box2d.org
 *
 * This software is provided 'as-is', without any express or implied
@@ -104,7 +104,7 @@ b2Body::b2Body(const b2BodyDef* bd, b2World* world)
 	m_fixtureList = NULL;
 	m_fixtureCount = 0;
 
-	mj=0;
+	mj=1;
 }
 
 b2Body::~b2Body()
