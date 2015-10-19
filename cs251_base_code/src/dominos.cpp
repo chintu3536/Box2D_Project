@@ -188,6 +188,81 @@ namespace cs251
       jointDef.collideConnected = false;
       m_world->CreateJoint(&jointDef);
     }
+    {
+    float32 x=25.0f;
+    float32 y=25.0f;
+    float32 r=0.5f;
+    {
+      b2Body* rbody;
+      b2PolygonShape shape;
+      int xoff=0,yoff=0,k=4,l=0;
+      for(l=1;l<9;l=l+2)
+      {
+      shape.SetAsBox(r, 0.125, b2Vec2(xoff,yoff), -11/(14.0));
+      b2FixtureDef wedgefd;
+      wedgefd.shape = &shape;
+      wedgefd.density = 10.0f;
+      wedgefd.friction = 0.0f;
+      wedgefd.restitution = 1.0f;
+      b2BodyDef wedgebd;
+      wedgebd.position.Set(x,y);
+      rbody = m_world->CreateBody(&wedgebd);
+      (rbody->CreateFixture(&wedgefd));
+
+      shape.SetAsBox(r, 0.125, b2Vec2(xoff+l*r*k,yoff+l*r*k), -11/(14.0));
+      wedgefd.shape = &shape;
+      (rbody->CreateFixture(&wedgefd));
+
+      shape.SetAsBox(r, 0.125, b2Vec2(xoff+l*r*k,yoff), 11/(14.0));
+       wedgefd.shape = &shape;
+      (rbody->CreateFixture(&wedgefd));
+
+      shape.SetAsBox(r, 0.125, b2Vec2(xoff-r*k,yoff+l*r*k), 11/(14.0));
+       wedgefd.shape = &shape;
+      (rbody->CreateFixture(&wedgefd));
+
+      xoff=xoff-r*k;
+      yoff=yoff-r*k;
+      }
+    {
+      b2Body* rbody;
+      b2PolygonShape shape;
+      shape.SetAsBox(r*2, 0.125, b2Vec2(x+r,y+5*r*k), -22/(21.0));
+      b2FixtureDef wedgefd;
+      wedgefd.shape = &shape;
+      wedgefd.density = 10.0f;
+      wedgefd.friction = 0.0f;
+      wedgefd.restitution = 3.0f;
+      b2BodyDef wedgebd;
+      rbody = m_world->CreateBody(&wedgebd);
+      (rbody->CreateFixture(&wedgefd));
+    }
+    {
+        b2Body *sp_gless;
+        b2CircleShape circle;
+        circle.m_radius = 0.5*r;
+        b2FixtureDef sp_gless_fix;
+        sp_gless_fix.shape=&circle;
+        sp_gless_fix.density=10.0f;
+        sp_gless_fix.friction = 0.0f;
+        sp_gless_fix.restitution = 1.0f;
+        b2BodyDef sp;
+        sp.type=b2_dynamicBody;
+        sp.position.Set(x+(l/2)*r*k, y);
+        sp_gless=m_world->CreateBody(&sp);
+        sp_gless->SetGravityScale(0);
+        sp_gless->ApplyLinearImpulse( b2Vec2(0,-20), sp_gless->GetPosition(), true);
+        (sp_gless->CreateFixture(&sp_gless_fix));
+
+        /*circle.m_radius = r;
+        sp_gless_fix.shape=&circle;
+        sp.position.Set(x+(l/2)*r*k, y+2*r);
+        sphere=m_world->CreateBody(&sp);
+        (sphere->CreateFixture(&sp_gless_fix))->zsetcol(255,99,71,0.8);*/
+
+    }
+    }
+}
   }
 
   sim_t *sim = new sim_t("Dominos", dominos_t::create);
