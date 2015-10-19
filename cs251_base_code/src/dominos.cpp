@@ -44,71 +44,63 @@ namespace cs251
    */ 
   
   dominos_t::dominos_t()
-  {
-    {
-          b2BodyDef bd;
-          bd.position.Set(xk+rk*-39.0f, yk+rk*6.0f);
-          b2Body* body = m_world->CreateBody(&bd);
-          b2PolygonShape shape;
-          shape.SetAsBox(rk*12.0f, rk*0.3f, rk*b2Vec2(-11.0f,0.0f), 0.0f);
-          b2FixtureDef fdb;
-          fdb.density = 0.5f;
-          fdb.shape = &shape;
-          (body->CreateFixture(&fdb))->SetFcolor(255,255,0,0.9);
-          shape.SetAsBox(rk*0.25f, rk*1.0f, rk*b2Vec2(1.0f,0.6f), 0.0f);
-          fdb.shape = &shape;
-          (body->CreateFixture(&fdb))->SetFcolor(255,255,0,0.9);
-        }
-        //sphbase
+  {{
+        float32 xd=x;
+        float32 yd=y+r*2.5f/0.9f;
+        float32 rd=r;
+
+        //Horizontal shelf
         {
-          b2BodyDef bd;
-          bd.position.Set(xk+rk*-37.0f, yk+rk*20.0f);
-          b2Body* body = m_world->CreateBody(&bd);
           b2PolygonShape shape;
-          shape.SetAsBox(rk*0.8f, rk*0.3f);
-          b2FixtureDef fdb;
-          fdb.density = 0.5f;
-          fdb.shape = &shape;
-          (body->CreateFixture(&fdb))->SetFcolor(255,0,255,0.9);
+          shape.SetAsBox(rd*35.0f, rd*0.30f);
+          b2BodyDef bd;
+          bd.position.Set(xd+rd*-34.0f, yd+rd*-50.0f);
+          b2Body* ground = m_world->CreateBody(&bd);
+          (ground->CreateFixture(&shape, 0.0f))->SetFcolor(0,0,178,0.9);
+          //Slope
+          b2EdgeShape eshape;
+          b2FixtureDef fd;
+          fd.shape = &eshape;
+          eshape.Set(b2Vec2(xd+rd*7.5f,yd+rd*-32.5f),b2Vec2(xd+rd*15.5f,yd+rd*-32.5f));      
+          (ground->CreateFixture(&fd))->SetFcolor(0,0,178,0.9f);
 
         }
-        //sphere
-        {
-          b2Body* sbody;
-          b2CircleShape circle;
-          circle.m_radius = rk*1.5;
-      
-          b2FixtureDef ballfd;
-          ballfd.shape = &circle;
-          ballfd.density = 50.0f;
-          ballfd.friction = 0.4f;
-          ballfd.restitution = 0.0f;
-          b2BodyDef ballbd;
-          ballbd.type = b2_dynamicBody;
-          ballbd.position.Set(xk+rk*-37.5f, yk+rk*22.0f);
-          sbody = m_world->CreateBody(&ballbd);
-          (sbody->CreateFixture(&ballfd))->SetFcolor(0,255,0,0.85);
-        }
 
-        //Revolving V platform
+        //Dominos
         {
           b2PolygonShape shape;
-          shape.SetAsBox(rk*0.2f, rk*18.2f);    
           b2BodyDef bd;
-          bd.position.Set(xk+rk*-35.0f, yk+rk*4.0f);
+          bd.type = b2_dynamicBody;    
+          b2FixtureDef fd;
+          fd.density = 35.0f;
+          fd.friction = 0.3f;
+        
+          for (int i = 0; i < 10; ++i)
+          {
+            shape.SetAsBox(rd*0.35f, rd*(6.0f-0.4f*i));
+            if(i==0)shape.SetAsBox(rd*0.45f, rd*(6.0f-0.4f*i));
+            fd.shape = &shape;
+            bd.position.Set(xd+rd*(-19.4f - 2.2f * i), yd+rd*(-43.0f-0.35f*i));
+            b2Body* body = m_world->CreateBody(&bd);
+            (body->CreateFixture(&fd))->SetFcolor(255,215,0,0.9);
+          }
+        }
+
+        //Revolving H platform
+        {
+          b2PolygonShape shape;
+          shape.SetAsBox(rd*2.0f, rd*0.2f);    
+          b2BodyDef bd;
+          bd.position.Set(xd+rd*-56, yd+rd*-35.0f);
           bd.type = b2_dynamicBody;
           b2Body* body = m_world->CreateBody(&bd);
           b2FixtureDef *fd = new b2FixtureDef;
           fd->density = 1.0f;
           fd->shape = &shape;
           (body->CreateFixture(fd))->SetFcolor(139,0,139,0.9);
-          shape.SetAsBox(rk*0.5f, rk*0.3f, rk*b2Vec2(-0.5f, 17.75f), 0);
-          fd->density = 0.0f;
-          fd->shape = &shape;
-          (body->CreateFixture(fd))->SetFcolor(139,0,139,0.9);
 
           b2BodyDef bd2;
-          bd2.position.Set(xk+rk*-35.0f, yk+rk*4.0f);
+          bd2.position.Set(xd+rd*-56, yd+rd*-35.0f);
           b2Body* body2 = m_world->CreateBody(&bd2);
 
           b2RevoluteJointDef jointDef;
@@ -119,46 +111,71 @@ namespace cs251
           jointDef.collideConnected = false;
           m_world->CreateJoint(&jointDef);
         }
-        //Seesaw
+
+        //Revolving V platform
         {
+          b2PolygonShape shape;
+          shape.SetAsBox(rd*0.2f, rd*9.0f);    
           b2BodyDef bd;
-          bd.position.Set(xk+rk*-50.0f, yk+rk*9.0f);
+          bd.position.Set(xd+rd*-60.5, yd+rd*-40.0f);
           bd.type = b2_dynamicBody;
           b2Body* body = m_world->CreateBody(&bd);
-          b2PolygonShape shape;
-          shape.SetAsBox(rk*10.0f, rk*0.2f); 
           b2FixtureDef *fd = new b2FixtureDef;
           fd->density = 1.0f;
           fd->shape = &shape;
-          fd->friction = 1.0f;
           (body->CreateFixture(fd))->SetFcolor(139,0,139,0.9);
-          
-          b2BodyDef bd2;
-          bd2.position.Set(xk+rk*-46.0f, yk+rk*7.5f);
-          b2Body* body2 = m_world->CreateBody(&bd2);
-          b2FixtureDef *fd2 = new b2FixtureDef;
-          shape.SetAsBox(rk*0.2f, rk*1.5f); 
-          fd2->shape = &shape;
-          (body2->CreateFixture(fd2))->SetFcolor(139,0,139,0.9);
+          shape.SetAsBox(rd*0.5f, rd*0.3f, rd*b2Vec2(0.5f, 8.75f), 0);
+          fd->density = 0.0f;
+          fd->shape = &shape;
+          (body->CreateFixture(fd))->SetFcolor(139,0,139,0.9);
 
-          b2BodyDef bd3;
-          bd3.type = b2_dynamicBody;
-          bd3.position.Set(xk+rk*-56.0f, yk+rk*10.6f);
-          b2Body* body3 = m_world->CreateBody(&bd3);
-          shape.SetAsBox(rk*1.5f, rk*1.5f); 
-          b2FixtureDef *fd3 = new b2FixtureDef;
-          fd3->density = 7.0f;
-          fd3->friction = 1.0f;
-          fd3->shape = &shape;
-          (body3->CreateFixture(fd3))->SetFcolor(0,139,0,0.9);
+          b2BodyDef bd2;
+          bd2.position.Set(xd+rd*-60.5, yd+rd*-40.0f);
+          b2Body* body2 = m_world->CreateBody(&bd2);
 
           b2RevoluteJointDef jointDef;
           jointDef.bodyA = body;
           jointDef.bodyB = body2;
-          jointDef.localAnchorA.Set(rk*4,0);
-          jointDef.localAnchorB.Set(0,rk*1.5);
+          jointDef.localAnchorA.Set(0,0);
+          jointDef.localAnchorB.Set(0,0);
           jointDef.collideConnected = false;
           m_world->CreateJoint(&jointDef);
+        }
+
+        //The heavy sphere on the platform
+        {
+          b2Body* sbody;
+          b2CircleShape circle;
+          circle.m_radius = rd*3.0;
+      
+          b2FixtureDef ballfd;
+          ballfd.shape = &circle;
+          ballfd.density = 10.0f;
+          ballfd.friction = 0.4f;
+          ballfd.restitution = 0.2f;
+          b2BodyDef ballbd;
+          ballbd.type = b2_dynamicBody;
+          ballbd.position.Set(xd+rd*-56, yd+rd*-31.0f);
+          sbody = m_world->CreateBody(&ballbd);
+          (sbody->CreateFixture(&ballfd))->SetFcolor(128,128,0,0.85);
+        }
+        //Into end sph
+        {
+          b2Body* sbody;
+          b2CircleShape circle;
+          circle.m_radius = rd*2.0;
+      
+          b2FixtureDef ballfd;
+          ballfd.shape = &circle;
+          ballfd.density = 10.0f;
+          ballfd.friction = 0.2f;
+          ballfd.restitution = 0.2f;
+          b2BodyDef ballbd;
+          ballbd.type = b2_dynamicBody;
+          ballbd.position.Set(xd+rd*-6.3f, yd+rd*-47.0f);
+          sbody = m_world->CreateBody(&ballbd);
+          insphere = sbody;
+          (sbody->CreateFixture(&ballfd))->SetFcolor(139,69,19,0.9);
         }
       }
   }
