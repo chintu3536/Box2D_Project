@@ -16,7 +16,7 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-/*
+/* 
  * Base code for CS 251 Software Systems Lab 
  * Department of Computer Science and Engineering, IIT Bombay
  * 
@@ -42,8 +42,8 @@ namespace cs251
 {
   dominos_t1::dominos_t1()
   {
-  	float32 x=30.0f;
-    float32 y=40.0f;
+  	float32 x=25.0f;
+    float32 y=27.0f;
     float32 r=0.9f;//Not Working
 
     //Up
@@ -547,7 +547,7 @@ namespace cs251
     //D2
     {
       float32 xd=x;
-      float32 yd=y+r*2.5f;
+      float32 yd=y+r*2.5f/0.9f;
       float32 rd=r;
 
       //Horizontal shelf
@@ -574,7 +574,7 @@ namespace cs251
           shape.SetAsBox(rd*0.35f, rd*(6.0f-0.4f*i));
           if(i==0)shape.SetAsBox(rd*0.45f, rd*(6.0f-0.4f*i));
           fd.shape = &shape;
-          bd.position.Set(xd+rd*(-19.3f - 2.2f * i), yd+rd*(-43.0f-0.35f*i));
+          bd.position.Set(xd+rd*(-19.2f - 2.2f * i), yd+rd*(-43.0f-0.35f*i));
           b2Body* body = m_world->CreateBody(&bd);
           (body->CreateFixture(&fd))->zsetcol(255,145,0,1);
         }
@@ -661,12 +661,12 @@ namespace cs251
     
         b2FixtureDef ballfd;
         ballfd.shape = &circle;
-        ballfd.density = 20.0f;
+        ballfd.density = 10.0f;
         ballfd.friction = 0.4f;
         ballfd.restitution = 0.2f;
         b2BodyDef ballbd;
         ballbd.type = b2_dynamicBody;
-        ballbd.position.Set(xd+rd*-6.0f, yd+rd*-47.0f);
+        ballbd.position.Set(xd+rd*-6.3f, yd+rd*-47.0f);
         sbody = m_world->CreateBody(&ballbd);
         (sbody->CreateFixture(&ballfd))->zsetcol(0,255,0,0.85);
       }
