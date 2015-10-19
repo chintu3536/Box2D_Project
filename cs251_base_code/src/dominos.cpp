@@ -44,69 +44,123 @@ namespace cs251
    */ 
   
   dominos_t::dominos_t()
-  {//Maze
-      {
-        float32 xm=x+r*-45.0f;
-        float32 ym=y+r*42.0f;
-        float32 rm=r*1.0f;
-        float32 csize=rm*4.7f;
-
-        bool R[6][10]={
-          {1,1,1,1,1,1,1,1,1,1},{0,1,0,0,1,0,0,1,1,0},{0,1,1,1,0,1,0,0,0,1},
-          {1,0,0,1,0,0,1,1,0,0},{0,1,1,0,0,1,1,0,1,1},{1,1,1,1,1,1,1,1,1,1}
-        };
-        bool C[5][11]={
-          {0,0,0,1,0,0,1,0,0,0,1},{1,1,0,1,0,1,0,1,1,0,1},{1,0,1,0,1,0,1,0,1,1,1},
-          {1,0,0,1,0,1,0,1,0,0,1},{1,0,0,0,1,0,1,0,0,0,1}
-        };
-
-        b2BodyDef bd;
-        b2Body* bbody = m_world->CreateBody(&bd);
-        b2EdgeShape eshape; 
-        b2FixtureDef myfd;
-        myfd.shape = &eshape;
-
-        for(int i=0;i<6;i++){
-          for(int j=0;j<10;j++){
-            if(!R[i][j])continue;
-            eshape.Set(b2Vec2(xm+csize*j,ym+csize*-i),b2Vec2(xm+csize*(j+1),ym+csize*-i));      
-            (bbody->CreateFixture(&myfd))->SetFcolor(255,255,0,1.0f);
-          }
+  {
+    {
+          b2BodyDef bd;
+          bd.position.Set(xk+rk*-39.0f, yk+rk*6.0f);
+          b2Body* body = m_world->CreateBody(&bd);
+          b2PolygonShape shape;
+          shape.SetAsBox(rk*12.0f, rk*0.3f, rk*b2Vec2(-11.0f,0.0f), 0.0f);
+          b2FixtureDef fdb;
+          fdb.density = 0.5f;
+          fdb.shape = &shape;
+          (body->CreateFixture(&fdb))->SetFcolor(255,255,0,0.9);
+          shape.SetAsBox(rk*0.25f, rk*1.0f, rk*b2Vec2(1.0f,0.6f), 0.0f);
+          fdb.shape = &shape;
+          (body->CreateFixture(&fdb))->SetFcolor(255,255,0,0.9);
         }
-        for(int i=0;i<5;i++){
-          for(int j=0;j<11;j++){
-            if(!C[i][j])continue;
-            eshape.Set(b2Vec2(xm+csize*j,ym+csize*-i),b2Vec2(xm+csize*j,ym+csize*(-i-1)));      
-            (bbody->CreateFixture(&myfd))->SetFcolor(255,200,0,1.0f);
-          }
-        }
-        eshape.Set(b2Vec2(xm+csize*0,ym+csize*0),b2Vec2(xm+csize*-1,ym+csize*0));      
-        (bbody->CreateFixture(&myfd))->SetFcolor(255,255,0,1.0f);
-        eshape.Set(b2Vec2(xm+csize*0,ym+csize*-1),b2Vec2(xm+csize*-1,ym+csize*-1));      
-        (bbody->CreateFixture(&myfd))->SetFcolor(255,255,0,1.0f);
-        eshape.Set(b2Vec2(xm+csize*-1,ym+csize*0),b2Vec2(xm+csize*-1,ym+csize*-1));      
-        (bbody->CreateFixture(&myfd))->SetFcolor(255,200,0,1.0f);
-
-        //Sphere
+        //sphbase
         {
-          b2Body* sbody;          
+          b2BodyDef bd;
+          bd.position.Set(xk+rk*-37.0f, yk+rk*20.0f);
+          b2Body* body = m_world->CreateBody(&bd);
+          b2PolygonShape shape;
+          shape.SetAsBox(rk*0.8f, rk*0.3f);
+          b2FixtureDef fdb;
+          fdb.density = 0.5f;
+          fdb.shape = &shape;
+          (body->CreateFixture(&fdb))->SetFcolor(255,0,255,0.9);
+
+        }
+        //sphere
+        {
+          b2Body* sbody;
           b2CircleShape circle;
-          circle.m_radius = 0.92*csize/2;    
+          circle.m_radius = rk*1.5;
+      
           b2FixtureDef ballfd;
           ballfd.shape = &circle;
-          ballfd.density = 0.05f;
-          ballfd.friction = 0.0f;
+          ballfd.density = 50.0f;
+          ballfd.friction = 0.4f;
           ballfd.restitution = 0.0f;
           b2BodyDef ballbd;
           ballbd.type = b2_dynamicBody;
-          ballbd.position.Set(xm+rm*-csize/2.0f, ym+rm*-csize/2.0f);
+          ballbd.position.Set(xk+rk*-37.5f, yk+rk*22.0f);
           sbody = m_world->CreateBody(&ballbd);
-          sbody->setmousejoint();
-          mazesphere = sbody;
-          (sbody->CreateFixture(&ballfd))->SetFcolor(255,0,0,0.85);
+          (sbody->CreateFixture(&ballfd))->SetFcolor(0,255,0,0.85);
         }
 
+        //Revolving V platform
+        {
+          b2PolygonShape shape;
+          shape.SetAsBox(rk*0.2f, rk*18.2f);    
+          b2BodyDef bd;
+          bd.position.Set(xk+rk*-35.0f, yk+rk*4.0f);
+          bd.type = b2_dynamicBody;
+          b2Body* body = m_world->CreateBody(&bd);
+          b2FixtureDef *fd = new b2FixtureDef;
+          fd->density = 1.0f;
+          fd->shape = &shape;
+          (body->CreateFixture(fd))->SetFcolor(139,0,139,0.9);
+          shape.SetAsBox(rk*0.5f, rk*0.3f, rk*b2Vec2(-0.5f, 17.75f), 0);
+          fd->density = 0.0f;
+          fd->shape = &shape;
+          (body->CreateFixture(fd))->SetFcolor(139,0,139,0.9);
+
+          b2BodyDef bd2;
+          bd2.position.Set(xk+rk*-35.0f, yk+rk*4.0f);
+          b2Body* body2 = m_world->CreateBody(&bd2);
+
+          b2RevoluteJointDef jointDef;
+          jointDef.bodyA = body;
+          jointDef.bodyB = body2;
+          jointDef.localAnchorA.Set(0,0);
+          jointDef.localAnchorB.Set(0,0);
+          jointDef.collideConnected = false;
+          m_world->CreateJoint(&jointDef);
+        }
+        //Seesaw
+        {
+          b2BodyDef bd;
+          bd.position.Set(xk+rk*-50.0f, yk+rk*9.0f);
+          bd.type = b2_dynamicBody;
+          b2Body* body = m_world->CreateBody(&bd);
+          b2PolygonShape shape;
+          shape.SetAsBox(rk*10.0f, rk*0.2f); 
+          b2FixtureDef *fd = new b2FixtureDef;
+          fd->density = 1.0f;
+          fd->shape = &shape;
+          fd->friction = 1.0f;
+          (body->CreateFixture(fd))->SetFcolor(139,0,139,0.9);
+          
+          b2BodyDef bd2;
+          bd2.position.Set(xk+rk*-46.0f, yk+rk*7.5f);
+          b2Body* body2 = m_world->CreateBody(&bd2);
+          b2FixtureDef *fd2 = new b2FixtureDef;
+          shape.SetAsBox(rk*0.2f, rk*1.5f); 
+          fd2->shape = &shape;
+          (body2->CreateFixture(fd2))->SetFcolor(139,0,139,0.9);
+
+          b2BodyDef bd3;
+          bd3.type = b2_dynamicBody;
+          bd3.position.Set(xk+rk*-56.0f, yk+rk*10.6f);
+          b2Body* body3 = m_world->CreateBody(&bd3);
+          shape.SetAsBox(rk*1.5f, rk*1.5f); 
+          b2FixtureDef *fd3 = new b2FixtureDef;
+          fd3->density = 7.0f;
+          fd3->friction = 1.0f;
+          fd3->shape = &shape;
+          (body3->CreateFixture(fd3))->SetFcolor(0,139,0,0.9);
+
+          b2RevoluteJointDef jointDef;
+          jointDef.bodyA = body;
+          jointDef.bodyB = body2;
+          jointDef.localAnchorA.Set(rk*4,0);
+          jointDef.localAnchorB.Set(0,rk*1.5);
+          jointDef.collideConnected = false;
+          m_world->CreateJoint(&jointDef);
+        }
       }
-      }
+  }
       
 }
