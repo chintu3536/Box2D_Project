@@ -15,6 +15,9 @@
 * misrepresented as being the original software.
 * 3. This notice may not be removed or altered from any source distribution.
 */
+/*
+* Modified for CS251 Project by Group29
+*/
 
 #ifndef B2_DRAW_H
 #define B2_DRAW_H
@@ -25,11 +28,11 @@
 struct b2Color
 {
 	b2Color() {}
-	b2Color(float32 r, float32 g, float32 b) : r(r), g(g), b(b) { al=1.0; r1=0.5*r; g1=0.5*g; b1=0.5*b; al1=0.5;}
-	b2Color(float32 r, float32 g, float32 b, float32 al) : r(r), g(g), b(b), al(al) { r1=0.5*r; g1=0.5*g; b1=0.5*b; al1=0.5*al;}
-	b2Color(float32 r, float32 g, float32 b, float32 al, float32 r1, float32 b1, float32 g1, float32 al1) : r(r), g(g), b(b), al(al), r1(r1), g1(g1), b1(b1), al1(al1) {} 
-	void Set(float32 ri, float32 gi, float32 bi) { r = ri; g = gi; b = bi; al=1.0; r1=ri; g1=gi; b1=bi; al1=0.5;}
-	float32 r, g, b, al, r1, g1, b1, al1;
+	b2Color(float32 r, float32 g, float32 b) : r(r), g(g), b(b) { al=0.9; border=1;}
+	b2Color(float32 r, float32 g, float32 b, float32 al) : r(r), g(g), b(b), al(al) {border=1;}
+	void Set(float32 ri, float32 gi, float32 bi) { r = ri; g = gi; b = bi; al=0.9; border=1;}
+	float32 r, g, b, al;
+	bool border;
 };
 
 /// Implement and register this class with a b2World to provide debug drawing of physics

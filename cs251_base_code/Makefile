@@ -10,6 +10,7 @@ CAT	= cat
 PRINTF	= printf
 SED	= sed
 DOXYGEN = doxygen
+PYTHON = python
 ######################################
 # Project Name (generate executable with this name)
 TARGET = cs251_base
@@ -22,7 +23,9 @@ SRCDIR = $(PROJECT_ROOT)/src
 OBJDIR = $(PROJECT_ROOT)/obj
 BINDIR = $(PROJECT_ROOT)/bin
 DOCDIR = $(PROJECT_ROOT)/doc
-MODDIR = $(PROJECT_ROOT)/modsrc
+MODDIR = $(PROJECT_ROOT)/b2mod
+REPDIR = $(PROJECT_ROOT)/Report
+PRODIR = $(PROJECT_ROOT)/profile
 DIR_ECOM = $(EXTERNAL_SRC)/Box2D/Box2D/Common
 DIR_EDYN = $(EXTERNAL_SRC)/Box2D/Box2D/Dynamics
 BB=$(PROJECT_ROOT)/external/src/Box2D
@@ -38,7 +41,7 @@ GL_ROOT=/usr/include/
 LIBS = -lBox2D -lglui -lglut -lGLU -lGL
 
 # Compiler and Linker flags
-CPPFLAGS =-g -O3 -Wall -fno-strict-aliasing
+CPPFLAGS =-g -O3 -Wall -pg -fno-strict-aliasing
 CPPFLAGS+=-I $(BOX2D_ROOT)/include -I $(GLUI_ROOT)/include
 LDFLAGS+=-L $(BOX2D_ROOT)/lib -L $(GLUI_ROOT)/lib
 
@@ -64,11 +67,9 @@ INCS := $(wildcard $(SRCDIR)/*.hpp)
 OBJS := $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
 
-.PHONY: all setup doc clean distclean
+.PHONY: all setup codeDoc clean distclean profile
 
-all:setup $(BINDIR)/$(TARGET)
-
-r: distclean b2dsetup setup $(BINDIR)/$(TARGET)
+all:distclean b2dsetup setup $(BINDIR)/$(TARGET)
 
 b2dsetup: b2dsetupstr modf b2dsetupcont
 
@@ -83,17 +84,6 @@ b2dsetupstr:
 	fi
 
 modf:
-	@$(RM) -rf $(SRCDIR)/render.cpp $(SRCDIR)/cs251_base.cpp $(SRCDIR)/cs251_base.hpp 
-	@$(RM) -rf $(SRCDIR)/dominos.cpp $(SRCDIR)/dominos.hpp $(SRCDIR)/main.cpp $(SRCDIR)/callbacks.cpp
-	@cp $(MODDIR)/render.cpp $(SRCDIR)/
-	@cp $(MODDIR)/cs251_base.cpp $(SRCDIR)/
-	@cp $(MODDIR)/cs251_base.hpp $(SRCDIR)/
-	@cp $(MODDIR)/dominos.hpp $(SRCDIR)/
-	@cp $(MODDIR)/dominos_1.cpp $(SRCDIR)/
-	@cp $(MODDIR)/dominos_2.cpp $(SRCDIR)/
-	@cp $(MODDIR)/main.cpp $(SRCDIR)/
-	@cp $(MODDIR)/callbacks.cpp $(SRCDIR)/
-	@cp $(MODDIR)/init_sims.cpp $(SRCDIR)/
 	@$(RM) $(DIR_ECOM)/b2Draw.h $(DIR_EDYN)/b2World.cpp $(DIR_EDYN)/b2Fixture.h $(DIR_EDYN)/b2Fixture.cpp #For Color
 	@$(RM) $(DIR_EDYN)/b2Body.cpp $(DIR_EDYN)/b2Body.h                                                    #For MouseJoint
 	@cp $(MODDIR)/b2Draw.h $(DIR_ECOM)/
@@ -105,7 +95,7 @@ modf:
 
 b2dsetupcont:	
 	@cd $(EXTERNAL_SRC)/Box2D/build251; \
-	cmake ../; \
+	cmake -DCMAKE_BUILD_TYPE=Release ../; \
 	make; \
 	make install; 	
 
@@ -116,7 +106,7 @@ setup:
 
 $(BINDIR)/$(TARGET): $(OBJS)
 	@$(PRINTF) "$(MESG_COLOR)Building executable:$(NO_COLOR) $(FILE_COLOR) %16s$(NO_COLOR)" "$(notdir $@)"
-	@$(CC) -o $@ $(LDFLAGS) $(OBJS) $(LIBS) 2> temp.log || touch temp.err
+	@$(CC) -pg -o $@ $(LDFLAGS) $(OBJS) $(LIBS) 2> temp.log || touch temp.err
 	@if test -e temp.err; \
 	then $(PRINTF) $(ERR_FMT) $(ERR_STRING) && $(CAT) temp.log; \
 	elif test -s temp.log; \
@@ -138,14 +128,28 @@ $(OBJS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 	fi;
 	@$(RM) -f temp.log temp.err
 
-doc:
+profile: 
+	@gprof $(BINDIR)/$(TARGET) ./gmon.out > $(PRODIR)/profile.txt
+	@python3 $(PRODIR)/gprof2dot.py $(PRODIR)/profile.txt > $(PRODIR)/out.dot
+	@dot -Tpng $(PRODIR)/out.dot -o $(PRODIR)/callgraph.png
+	@rm $(PRODIR)/out.dot $(PROJECT_ROOT)/gmon.out 
+
+release: all	
+
+codeDoc:
 	@$(ECHO) -n "Generating Doxygen Documentation ...  "
 	@$(RM) -rf doc/html
 	@$(DOXYGEN) $(DOCDIR)/Doxyfile 2 > /dev/null
 	@$(ECHO) "Done"
 
+report:
+	@$(ECHO) -n "presentation and report created in report folder"
+	@ cd ./Report && pdflatex ProjectReport && pdflatex ProjectReport && pdflatex slides;
+	#@ cd ./Report/ && pdflatex ProjectPresentation;
+	@$(ECHO) -n "presentation and report created in report folder"	
+
 clean:
-	@$(RM) -rf $(OBJDIR) *~ $(DEPS) $(SRCDIR)/*~ $(BINDIR) 
+	@$(RM) -rf $(OBJDIR) *~ $(DEPS) $(SRCDIR)/*~ $(BINDIR) $(PRODIR)/callgraph.png $(PRODIR)/profile.txt 
 
 distclean: clean
-	@$(RM) -rf $(BB) $(BC) $(BD) $(PROJECT_ROOT)/doc
+	@$(RM) -rf $(BB) $(BC) $(BD) $(DOCDIR)/html

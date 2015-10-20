@@ -15,6 +15,9 @@
 * misrepresented as being the original software.
 * 3. This notice may not be removed or altered from any source distribution.
 */
+/*
+* Modified for CS251 Project by Group29
+*/
 
 #include <Box2D/Dynamics/b2Body.h>
 #include <Box2D/Dynamics/b2Fixture.h>
@@ -104,7 +107,7 @@ b2Body::b2Body(const b2BodyDef* bd, b2World* world)
 	m_fixtureList = NULL;
 	m_fixtureCount = 0;
 
-	mj=1;
+	c_mousejoint=0;
 }
 
 b2Body::~b2Body()
@@ -550,12 +553,12 @@ void b2Body::Dump()
 	b2Log("}\n");
 }
 
-void b2Body::setmj()
+void b2Body::setmousejoint()
 {
-	mj=1;
+	c_mousejoint=1;
 }
 
-bool b2Body::getmj()
+bool b2Body::getmousejoint()
 {
-	return mj;
+	return c_mousejoint;
 }

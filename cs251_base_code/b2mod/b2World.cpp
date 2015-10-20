@@ -16,6 +16,10 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
+/*
+* Modified for CS251 Project by Group29
+*/
+
 #include <Box2D/Dynamics/b2World.h>
 #include <Box2D/Dynamics/b2Body.h>
 #include <Box2D/Dynamics/b2Fixture.h>
@@ -1136,6 +1140,15 @@ void b2World::DrawJoint(b2Joint* joint)
 		}
 		break;*/
 
+	case e_ropeJoint:
+		{
+			b2Color color1(170.0f/255, 170.0f/255, 170.0f/255, 1.0f);
+			m_debugDraw->DrawSegment(x1, p1, color1);
+			m_debugDraw->DrawSegment(p1, p2, color1);
+			m_debugDraw->DrawSegment(x2, p2, color1);
+		}
+		break;
+
 	default:
 		m_debugDraw->DrawSegment(x1, p1, color);
 		m_debugDraw->DrawSegment(p1, p2, color);
@@ -1165,19 +1178,19 @@ void b2World::DrawDebugData()
 				}
 				else if (b->GetType() == b2_staticBody)
 				{
-					DrawShape(f, xf, f->zcol);
+					DrawShape(f, xf, f->fcolor);
 				}
 				else if (b->GetType() == b2_kinematicBody)
 				{
-					DrawShape(f, xf, f->zcol);
+					DrawShape(f, xf, f->fcolor);
 				}
 				else if (b->IsAwake() == false)
 				{
-					DrawShape(f, xf, f->zcol);
+					DrawShape(f, xf, f->fcolor);
 				}
 				else
 				{
-					DrawShape(f, xf, f->zcol);
+					DrawShape(f, xf, f->fcolor);
 				}
 			}
 		}

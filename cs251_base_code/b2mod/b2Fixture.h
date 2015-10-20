@@ -15,7 +15,9 @@
 * misrepresented as being the original software.
 * 3. This notice may not be removed or altered from any source distribution.
 */
-
+/*
+* Modified for CS251 Project by Group29
+*/
 #ifndef B2_FIXTURE_H
 #define B2_FIXTURE_H
 
@@ -196,11 +198,11 @@ public:
 	/// Dump this fixture to the log file.
 	void Dump(int32 bodyIndex);
 
-	void zsetcol(int ir, int ig, int ib);
+	void SetFcolor(int ir, int ig, int ib);
 
-	void zsetcol(int ir, int ig, int ib, float32 ali);
+	void SetFcolor(int ir, int ig, int ib, float32 ali);
 
-	void zsetcol(int ir, int ig, int ib, float32 ali, int ir1, int ig1, int ib1, float32 ali1);
+	void SetFcolor(int ir, int ig, int ib, float32 ali, bool border);
 
 protected:
 
@@ -241,7 +243,7 @@ protected:
 
 	void* m_userData;
 
-	b2Color zcol;
+	b2Color fcolor;
 };
 
 inline b2Shape::Type b2Fixture::GetType() const

@@ -15,7 +15,9 @@
 * misrepresented as being the original software.
 * 3. This notice may not be removed or altered from any source distribution.
 */
-
+/*
+* Modified for CS251 Project by Group29
+*/
 #include <Box2D/Dynamics/b2Fixture.h>
 #include <Box2D/Dynamics/Contacts/b2Contact.h>
 #include <Box2D/Dynamics/b2World.h>
@@ -27,7 +29,7 @@
 #include <Box2D/Collision/b2Collision.h>
 #include <Box2D/Common/b2BlockAllocator.h>
 
-b2Fixture::b2Fixture() : zcol(0.6, 0.6, 0.6)
+b2Fixture::b2Fixture() : fcolor(0.6, 0.5, 0.4)
 {
 	m_userData = NULL;
 	m_body = NULL;
@@ -302,20 +304,17 @@ void b2Fixture::Dump(int32 bodyIndex)
 	b2Log("    bodies[%d]->CreateFixture(&fd);\n", bodyIndex);
 }
 
-void b2Fixture::zsetcol(int ir, int ig, int ib)
+void b2Fixture::SetFcolor(int ir, int ig, int ib)
 {
-	zcol.r=ir/255.0f; zcol.r1=ir/255.0f; zcol.g=ig/255.0f; zcol.g1=ig/255.0f; zcol.b=ib/255.0f; zcol.b1=ib/255.0f;
-	zcol.al=1.0; zcol.al1=1.0;
+	fcolor.r=ir/255.0f; fcolor.g=ig/255.0f; fcolor.b=ib/255.0f;	fcolor.al=0.9; fcolor.border=1;
 }
 
-void b2Fixture::zsetcol(int ir, int ig, int ib, float32 ali)
+void b2Fixture::SetFcolor(int ir, int ig, int ib, float32 ali)
 {
-	zcol.r=ir/255.0f; zcol.r1=ir/255.0f; zcol.g=ig/255.0f; zcol.g1=ig/255.0f; zcol.b=ib/255.0f; zcol.b1=ib/255.0f;
-	zcol.al=ali; zcol.al1=ali;
+	fcolor.r=ir/255.0f; fcolor.g=ig/255.0f; fcolor.b=ib/255.0f;	fcolor.al=ali; fcolor.border=1;
 }
 
-void b2Fixture::zsetcol(int ir, int ig, int ib, float32 ali, int ir1, int ig1, int ib1, float32 ali1)
+void b2Fixture::SetFcolor(int ir, int ig, int ib, float32 ali, bool border)
 {
-	zcol.r=ir/255.0f; zcol.g=ig/255.0f; zcol.b=ib/255.0f; zcol.r1=ir1/255.0f; zcol.g1=ig1/255.0f; zcol.b1=ib1/255.0f;
-	zcol.al=ali; zcol.al1=ali1;
+	fcolor.r=ir/255.0f; fcolor.g=ig/255.0f; fcolor.b=ib/255.0f;	fcolor.al=ali; fcolor.border=border;
 }

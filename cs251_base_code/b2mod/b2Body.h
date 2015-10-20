@@ -15,6 +15,9 @@
 * misrepresented as being the original software.
 * 3. This notice may not be removed or altered from any source distribution.
 */
+/*
+* Modified for CS251 Project by Group29
+*/
 
 #ifndef B2_BODY_H
 #define B2_BODY_H
@@ -383,9 +386,9 @@ public:
 	/// Dump this body to a log file
 	void Dump();
 
-	void setmj();
+	void setmousejoint();
 
-	bool getmj();
+	bool getmousejoint();
 
 private:
 
@@ -469,7 +472,7 @@ private:
 
 	void* m_userData;
 
-	bool mj;
+	bool c_mousejoint;
 };
 
 inline b2BodyType b2Body::GetType() const
