@@ -44,52 +44,159 @@ namespace cs251
    */ 
   
   dominos_t::dominos_t()
-  {{
-          b2PolygonShape shape;
-          shape.SetAsBox(r*9.0f, r*0.25f, b2Vec2(0.0f,0.0f), 0.0f);
-          b2BodyDef bd;
-          bd.position.Set(x+r*16.0f, y+r*15.0f);
-          b2Body* ground = m_world->CreateBody(&bd);
-          (ground->CreateFixture(&shape, 0.0f))->SetFcolor(0,0,178,0.9);
-        }
+  {//Maze
+      {
+        float32 xm=x+r*-45.0f;
+        float32 ym=y+r*42.0f;
+        float32 rm=r*1.0f;
+        float32 csize=rm*4.7f;
 
-        //Dominos
-        {
-          b2PolygonShape shape;
-          shape.SetAsBox(r*0.25f, r*2.0f);
-      
-          b2FixtureDef fd;
-          fd.shape = &shape;
-          fd.density = 10.0f;
-          fd.friction = 0.3f;
-        
-          for (int i = 0; i < 8; ++i)
-          {
-            b2BodyDef bd;
-            bd.type = b2_dynamicBody;
-            bd.position.Set(x+r*(7.7f + 1.5f * i), y+r*17.0f);
-            b2Body* body = m_world->CreateBody(&bd);
-            (body->CreateFixture(&fd))->SetFcolor(255,145,0,1);
+        bool R[6][10]={
+          {1,1,1,1,1,1,1,1,1,1},{0,1,0,0,1,0,0,1,1,0},{0,1,1,1,0,1,0,0,0,1},
+          {1,0,0,1,0,0,1,1,0,0},{0,1,1,0,0,1,1,0,1,1},{1,1,1,1,1,1,1,1,1,1}
+        };
+        bool C[5][11]={
+          {0,0,0,1,0,0,1,0,0,0,1},{1,1,0,1,0,1,0,1,1,0,1},{1,0,1,0,1,0,1,0,1,1,1},
+          {1,0,0,1,0,1,0,1,0,0,1},{1,0,0,0,1,0,1,0,0,0,1}
+        };
+
+        b2BodyDef bd;
+        b2Body* bbody = m_world->CreateBody(&bd);
+        b2EdgeShape eshape; 
+        b2FixtureDef myfd;
+        myfd.shape = &eshape;
+
+        for(int i=0;i<6;i++){
+          for(int j=0;j<10;j++){
+            if(!R[i][j])continue;
+            eshape.Set(b2Vec2(xm+csize*j,ym+csize*-i),b2Vec2(xm+csize*(j+1),ym+csize*-i));      
+            (bbody->CreateFixture(&myfd))->SetFcolor(255,255,0,1.0f);
           }
         }
+        for(int i=0;i<5;i++){
+          for(int j=0;j<11;j++){
+            if(!C[i][j])continue;
+            eshape.Set(b2Vec2(xm+csize*j,ym+csize*-i),b2Vec2(xm+csize*j,ym+csize*(-i-1)));      
+            (bbody->CreateFixture(&myfd))->SetFcolor(255,200,0,1.0f);
+          }
+        }
+        eshape.Set(b2Vec2(xm+csize*0,ym+csize*0),b2Vec2(xm+csize*-1,ym+csize*0));      
+        (bbody->CreateFixture(&myfd))->SetFcolor(255,255,0,1.0f);
+        eshape.Set(b2Vec2(xm+csize*0,ym+csize*-1),b2Vec2(xm+csize*-1,ym+csize*-1));      
+        (bbody->CreateFixture(&myfd))->SetFcolor(255,255,0,1.0f);
+        eshape.Set(b2Vec2(xm+csize*-1,ym+csize*0),b2Vec2(xm+csize*-1,ym+csize*-1));      
+        (bbody->CreateFixture(&myfd))->SetFcolor(255,200,0,1.0f);
 
-        //Sphere 
+        //Sphere
         {
-          b2Body* sbody;
+          b2Body* sbody;          
           b2CircleShape circle;
-          circle.m_radius = r*1.5;
-      
+          circle.m_radius = 0.92*csize/2;    
           b2FixtureDef ballfd;
           ballfd.shape = &circle;
-          ballfd.density = 30.0f;
+          ballfd.density = 0.05f;
           ballfd.friction = 0.0f;
-          ballfd.restitution = 0.3f;
+          ballfd.restitution = 0.0f;
           b2BodyDef ballbd;
           ballbd.type = b2_dynamicBody;
-          ballbd.position.Set(x+r*22.5f, y+r*17.0f);
+          ballbd.position.Set(xm+rm*-csize/2.0f, ym+rm*-csize/2.0f);
           sbody = m_world->CreateBody(&ballbd);
-          (sbody->CreateFixture(&ballfd))->SetFcolor(255,215,0,0.95);
+          sbody->setmousejoint();
+          mazesphere = sbody;
+          (sbody->CreateFixture(&ballfd))->SetFcolor(255,0,0,0.85);
         }
+
+      }
+
+      //Base,Cannon
+      {
+        float32 xc=x+r*20.0f;
+        float32 yc=y+r*19.0f;
+        
+        b2BodyDef bd;
+        b2Body* bbody = m_world->CreateBody(&bd);
+        b2EdgeShape eshape; 
+        b2FixtureDef myfd;
+        myfd.shape = &eshape;
+        eshape.Set(b2Vec2(xc+r*-95.0f,yc+r*-7.0f),b2Vec2(xc+r*0.0f,yc+r*-7.0f));      
+        (bbody->CreateFixture(&myfd))->SetFcolor(255,0,0,1.0f);
+        eshape.Set(b2Vec2(xc+r*0.0f,yc+r*-7.0f),b2Vec2(xc+r*0.0f,yc+r*0.0f));      
+        (bbody->CreateFixture(&myfd))->SetFcolor(0,0,0,1.0f);
+        eshape.Set(b2Vec2(xc+r*0.0f,yc+r*0.0f),b2Vec2(xc+r*40.0f,yc+r*0.0f));      
+        (bbody->CreateFixture(&myfd))->SetFcolor(255,0,0,1.0f);
+
+        float32 rc=r*1;
+        //Cannon
+        {
+          float32 ang = 12.0f;
+          float32 t_ang = 8.0f;
+          
+          b2BodyDef bd;
+          bd.position.Set(xc+rc*15.0f, yc+rc*-8.0f);
+          b2Body* body = m_world->CreateBody(&bd);
+          b2FixtureDef *fd = new b2FixtureDef;
+          b2PolygonShape pshape;        
+          b2CircleShape circle;        
+
+          //Body
+          fd->shape = &circle; 
+          fd->filter.maskBits = 0x0000;
+          circle.m_radius = rc*3.5f;           
+          (body->CreateFixture(fd))->SetFcolor(50,30,255,0.9);
+          circle.m_radius = rc*1.2f;           
+          (body->CreateFixture(fd))->SetFcolor(255,0,0,1.0);
+
+          
+          fd->shape = &pshape;
+          pshape.SetAsBox(rc*4.2f, rc*1.75f, b2Vec2(rc*-4.55*cosf((22.6166-ang-t_ang)*DEGTORAD),
+            rc*4.55*sinf((22.6166-ang-t_ang)*DEGTORAD)),(ang+t_ang)*DEGTORAD);     
+          (body->CreateFixture(fd))->SetFcolor(0,30,255,0.9,0);
+          pshape.SetAsBox(rc*4.2f, rc*1.75f, b2Vec2(rc*-4.55*cosf((22.6166-ang+t_ang)*DEGTORAD),
+            rc*-4.55*sinf((22.6166-ang+t_ang)*DEGTORAD)),-(ang-t_ang)*DEGTORAD);   
+          (body->CreateFixture(fd))->SetFcolor(0,30,255,0.9,0);
+          pshape.SetAsBox(rc*3.0f, rc*1.50f, b2Vec2(rc*-5.6*cosf(t_ang*DEGTORAD),
+            rc*-5.6*sinf(t_ang*DEGTORAD)),t_ang*DEGTORAD);   
+          (body->CreateFixture(fd))->SetFcolor(255,0,0,1.0);
+
+          //Base        
+          pshape.SetAsBox(rc*6.0f, rc*0.5f, b2Vec2(rc*0.0f,rc*7.5f), 0);     
+          (body->CreateFixture(fd))->SetFcolor(139,0,139,0.9);
+          pshape.SetAsBox(rc*4.0f, rc*0.5f, b2Vec2(rc*0.0f,rc*6.5f), 0);     
+          (body->CreateFixture(fd))->SetFcolor(0,30,255,0.9);
+          pshape.SetAsBox(rc*0.6f, rc*3.0f, b2Vec2(rc*0.0f,rc*3.0f), 0);     
+          (body->CreateFixture(fd))->SetFcolor(0,30,255,0.9);  
+
+          {
+            //Cannon Balls
+            b2CircleShape circle;
+            circle.m_radius = rc*1.0f;    
+            b2FixtureDef ballfd;
+            ballfd.shape = &circle;
+            ballfd.density = 50.0f;
+            ballfd.friction = 0.0f;
+            ballfd.restitution = 0.2f;
+            b2BodyDef ballbd;
+            ballbd.type = b2_dynamicBody;
+
+            float32 xrr=xc+rc*15.0f;
+            float32 yrr=yc+rc*-8.0f;
+            ballbd.position.Set(xrr+rc*-2.1*cosf(t_ang*DEGTORAD),yrr+rc*-2.1*sinf(t_ang*DEGTORAD));
+            cannonball1 = m_world->CreateBody(&ballbd);
+            cannonball1->SetAwake(false);
+            (cannonball1->CreateFixture(&ballfd))->SetFcolor(0,0,0,1.0);
+
+            ballbd.position.Set(xrr+rc*-5.1*cosf(t_ang*DEGTORAD),yrr+rc*-5.1*sinf(t_ang*DEGTORAD));
+            cannonball2 = m_world->CreateBody(&ballbd);
+            cannonball2->SetAwake(false);
+            (cannonball2->CreateFixture(&ballfd))->SetFcolor(0,0,0,1.0);
+
+            ballbd.position.Set(xrr+rc*-8.1*cosf(t_ang*DEGTORAD),yrr+rc*-8.1*sinf(t_ang*DEGTORAD));
+            cannonball3 = m_world->CreateBody(&ballbd);
+            cannonball3->SetAwake(false);
+            (cannonball3->CreateFixture(&ballfd))->SetFcolor(0,0,0,1.0);
+          }
+        }
+      }
   }
       
 }
