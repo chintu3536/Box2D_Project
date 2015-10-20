@@ -31,6 +31,8 @@
 #include <cstdlib>
 
 #define	RAND_LIMIT 32767
+#define DEGTORAD 0.0174532925f
+#define RADTODEG 57.295779513f
 
 namespace cs251
 {
@@ -92,7 +94,7 @@ namespace cs251
     int32 single_step;
   };
   
-  struct sim_t
+ struct sim_t
   {
     const char *name;
     sim_create_fcn *create_fcn;
@@ -101,7 +103,7 @@ namespace cs251
       name(_name), create_fcn(_create_fcn) {;}
   };
   
-  extern sim_t *sim;
+  extern sim_t *sim[10];
   
   
   const int32 k_max_contact_points = 2048;  
@@ -132,16 +134,16 @@ namespace cs251
     virtual void keyboard_up(unsigned char key) { B2_NOT_USED(key); }
 
     void shift_mouse_down(const b2Vec2& p) { B2_NOT_USED(p); }
-    virtual void mouse_down(const b2Vec2& p) { B2_NOT_USED(p); }
-    virtual void mouse_up(const b2Vec2& p) { B2_NOT_USED(p); }
-    void mouse_move(const b2Vec2& p) { B2_NOT_USED(p); }
+    virtual void mouse_down(const b2Vec2& p) ;
+    virtual void mouse_up(const b2Vec2& p) ;
+    void mouse_move(const b2Vec2& p) ;
 
     
     // Let derived tests know that a joint was destroyed.
     virtual void joint_destroyed(b2Joint* joint) { B2_NOT_USED(joint); }
     
     // Callbacks for derived classes.
-    virtual void begin_contact(b2Contact* contact) { B2_NOT_USED(contact); }
+    virtual void BeginContact(b2Contact* contact);// { B2_NOT_USED(contact); }
     virtual void end_contact(b2Contact* contact) { B2_NOT_USED(contact); }
     virtual void pre_solve(b2Contact* contact, const b2Manifold* oldManifold);
     virtual void post_solve(const b2Contact* contact, const b2ContactImpulse* impulse)
@@ -149,6 +151,10 @@ namespace cs251
       B2_NOT_USED(contact);
       B2_NOT_USED(impulse);
     }
+
+    //For Common Bodies
+    void switchBody(b2Body* o, b2Body* n);
+    bool istimeup;
 
   //!How are protected members different from private memebers of a class in C++ ?
   protected:
@@ -169,7 +175,14 @@ namespace cs251
     
     b2Profile m_max_profile;
     b2Profile m_total_profile;
+
+    b2Vec2 m_mouseWorld;
+    b2MouseJoint* m_mouseJoint;
   };
+ 
+  //Common Body Defs
+  extern b2Body* ssensor;
+  extern b2Body* sbase;
 }
 
 #endif
