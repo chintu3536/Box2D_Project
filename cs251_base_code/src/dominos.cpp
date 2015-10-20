@@ -66,7 +66,7 @@ namespace cs251
     * using distance joints.jointdef is of type b2DistanceJointDef which defines the joint between the wheels and body.
     * anchor is of type b2Vec2 which is a vector containg the position of pendulum joint.
     * jd is initialized between the pendulum and the horizontal shelf.
-    *
+    * 
     * The Revolving Vertical platform: shape is a variable of type b2PolygonShape which defines the shape of the pendulum body.
     * This variable defines a rectangle of size 4.4X0.3 m^2.bd is of type b2BodyDef and defines revolving horizontal platform
     * and the position is set to (14,14).Type of bd is set to b2_dynamicBody.fd is of type b2FixtureDef which defines 
